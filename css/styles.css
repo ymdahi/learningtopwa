@@ -6,10 +6,10 @@
 }
 
 /* layout styles */
-/* nav{
+nav{
   background: var(--primary);
   border-bottom: 10px solid var(--secondary);
-} */
+}
 nav a{
   text-transform: uppercase;
   color: var(--title);
