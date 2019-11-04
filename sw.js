@@ -1,4 +1,4 @@
-const staticCacheName = 'site-static';
+const staticCacheName = 'site-static-v1';
 const assets = [
     '/learningtopwa/',
     '/learningtopwa/index.html',
@@ -35,6 +35,14 @@ self.addEventListener('install', evt => {
 // activate event
 self.addEventListener('activate', evt => {
     //console.log('sw activated');
+    evt.waitUntil(
+        caches.keys().then(keys => {
+            return Promise.all(keys
+                .filter(key => keys !== staticCacheName)
+                .map(key => caches.delete(key))
+            )
+        })
+    );
 });
 
 // fetch event
