@@ -1,4 +1,4 @@
-const staticCacheName = 'site-static-v1';
+const staticCacheName = 'site-static-v1.1';
 const assets = [
     '/learningtopwa/',
     '/learningtopwa/index.html',
