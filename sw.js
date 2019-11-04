@@ -1,4 +1,5 @@
 const staticCacheName = 'site-static-v1.1';
+const dynamicCacheName = 'site-dynamic-v1.0';
 const assets = [
     '/learningtopwa/',
     '/learningtopwa/index.html',
@@ -35,11 +36,15 @@ self.addEventListener('install', evt => {
 // activate event
 self.addEventListener('activate', evt => {
     //console.log('sw activated');
+
+    // use waitUntil method to wait for promise before moving on
     evt.waitUntil(
+        // the waitUntil method waits for this promis to return
         caches.keys().then(keys => {
+            // return a single promise
             return Promise.all(keys
-                .filter(key => key !== staticCacheName)
-                .map(key => caches.delete(key))
+                .filter(key => key !== staticCacheName) // create a new array that includes all staticCacheName that are not === to the current one.
+                .map(key => caches.delete(key)) // delete all keys that from that array of unmatching cache names.
             )
         })
     );
@@ -54,7 +59,16 @@ self.addEventListener('fetch', evt => {
     evt.respondWith(
         // an async that returns a promise:
         caches.match(evt.request).then(cacheRes => {
-            return cacheRes || fetch(evt.request); // return cached response. if empty (||), fetch from server.
+            // return cached response if available, otherwise fetch and cache dynamically from server.
+            return cacheRes || fetch(evt.request).then(fetchRes => {
+                // put/cache dynamic resources in dynamicCacheName
+                return caches.open(dynamicCacheName).then(cache => {
+                    // use a clone of fetchRes so that we can return the original in our promise (key and value)
+                    cache.put(evt.request.url, fetchRes.clone());
+                    // still return the response for the user
+                    return fetchRes;
+                })
+            });
         })
     );
 
